@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#04121c" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23051824'/%3E%3Cpath d='M6 22c2-1.2 4-1.2 6 0s4 1.2 6 0 4-1.2 6 0' fill='none' stroke='%23e9c88a' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M16 8v11M16 8l-4 3M16 8l4 3' fill='none' stroke='%23e9c88a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <meta name="description" content="عالم مفتوح: رحلة شراعية عبر أرخبيل منسٍّ، جزر استوائية، كنوز مدفونة وطقس متغيّر." />
+    <title>عالم مفتوح — رحلة نحو الأفق</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene" aria-label="مشهد اللعبة"></canvas>
+      <div class="grade" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="grain" aria-hidden="true"></div>
+
+      <!-- ============ HUD ============ -->
+      <div id="hud" class="hud is-hidden" aria-live="polite">
+        <div class="hud-top">
+          <div class="brand-block">
+            <div class="brand">
+              <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="5" r="2.2" />
+                  <path d="M12 7.2V20" />
+                  <path d="M5 12H19" />
+                  <path d="M7 12c0 3.5 2.2 6 5 6s5-2.5 5-6" />
+                  <path d="M4 17c2 1.6 4 2.4 8 2.4s6-.8 8-2.4" />
+                </svg>
+              </span>
+              <div class="brand-text">
+                <b>عالم مفتوح</b>
+                <small>OPEN WORLD · VOYAGE</small>
+              </div>
+            </div>
+            <div class="chips">
+              <div class="chip" title="الذهب">
+                <span class="chip-ico gold" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="7.5"/><path d="M12 8v8M9.5 9.5h4a2 2 0 010 4h-3a2 2 0 000 4h4"/></svg>
+                </span>
+                <b id="statGold">0</b>
+                <span class="chip-label">ذهب</span>
+              </div>
+              <div class="chip" title="الجزر المكتشفة">
+                <span class="chip-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 19c2-1.4 4-1.4 6 0s4 1.4 6 0 4-1.4 6 0"/><path d="M12 16V9"/><path d="M12 9c-3.5 0-5-1.4-5-3 3.4 0 5 1.2 5 3Z"/><path d="M14 13c2.6-.2 4-1.4 4.4-3.3-2.5-.3-4.2.8-4.4 3.3Z"/></svg>
+                </span>
+                <b id="statIslands">0</b><span class="chip-label">من ٨ جزر</span>
+              </div>
+              <div class="chip" title="الكنوز">
+                <span class="chip-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10h16v9H4z"/><path d="M3 10a5 5 0 0118 0"/><path d="M10 10V8h4v2"/><path d="M4 14h16"/></svg>
+                </span>
+                <b id="statChests">0</b><span class="chip-label">من ٨ كنوز</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="compass-wrap">
+            <canvas id="compass" width="900" height="120" aria-label="البوصلة"></canvas>
+            <div class="compass-needle" aria-hidden="true"></div>
+          </div>
+
+          <div class="map-block">
+            <div class="minimap-shell">
+              <canvas id="minimap" width="420" height="420" aria-label="خريطة الجزر"></canvas>
+              <span class="minimap-north">N</span>
+              <div class="minimap-ring" aria-hidden="true"></div>
+            </div>
+            <div class="conditions">
+              <span id="timeOfDay">غروب</span>
+              <span class="dot" aria-hidden="true"></span>
+              <span id="weather">صافٍ</span>
+            </div>
+            <button id="muteBtn" class="icon-btn" aria-label="كتم الصوت" title="الصوت">
+              <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M15 9a4 4 0 010 6"/><path d="M18 6.5a8 8 0 010 11"/></svg>
+              <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="quest" class="quest">
+          <span class="quest-kicker">المهمة</span>
+          <span id="questText">أبحر نحو جزيرة النور</span>
+          <span id="questDist" class="quest-dist">—</span>
+        </div>
+
+        <div id="toasts" class="toasts" aria-live="polite"></div>
+
+        <div class="hud-bottom">
+          <div class="speed-block glass">
+            <div class="speed-top">
+              <span class="label">السرعة</span>
+              <span class="speed-value"><b id="speed">0.0</b><i>عقدة</i></span>
+            </div>
+            <div class="sail-row">
+              <span class="sail-label">الشراع</span>
+              <div class="sail-track"><div id="sailFill" class="sail-fill"></div></div>
+              <span id="sailPct" class="sail-pct">0%</span>
+            </div>
+          </div>
+
+          <div class="hint-bar" id="hintBar">
+            <span class="key">W</span><span class="key">S</span> الشراع
+            <span class="sep"></span>
+            <span class="key">A</span><span class="key">D</span> التوجيه
+            <span class="sep"></span>
+            <span class="key">E</span> تفاعل
+            <span class="sep"></span>
+            <span class="key wide">Space</span> المرساة
+            <span class="sep"></span>
+            اسحب الكاميرا
+          </div>
+
+          <div class="wind-block glass">
+            <canvas id="windRose" width="180" height="180" aria-label="اتجاه الرياح"></canvas>
+            <div class="wind-meta">
+              <span class="label">الرياح</span>
+              <b id="windSpeed">0</b><i>عقدة</i>
+            </div>
+          </div>
+        </div>
+
+        <div class="touch-ui" id="touchUI">
+          <div class="joystick" id="joystick">
+            <div class="joystick-ring" aria-hidden="true"></div>
+            <div class="joystick-knob" id="joystickKnob" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 3v18M3 12h18"/><path d="M12 3l-2.5 3M12 3l2.5 3M12 21l-2.5-3M12 21l2.5-3M3 12l3-2.5M3 12l3 2.5M21 12l-3-2.5M21 12l-3 2.5"/></svg>
+            </div>
+          </div>
+          <div class="touch-actions">
+            <button id="touchInteract" class="round-btn primary" aria-label="تفاعل">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8 7l4-4 4 4"/><circle cx="12" cy="17" r="4"/></svg>
+              <small>تفاعل</small>
+            </button>
+            <button id="touchAnchor" class="round-btn" aria-label="المرساة">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v13M5 13H19M6 13c0 4 2.7 7 6 7s6-3 6-7"/></svg>
+              <small>مرساة</small>
+            </button>
+          </div>
+        </div>
+
+        <div id="prompt" class="prompt is-hidden"><span class="key">E</span><span id="promptText">افتح الصندوق</span></div>
+
+        <div class="brand-signature" aria-hidden="true">عالم مفتوح · OM GITHUB</div>
+      </div>
+
+      <!-- ============ TITLE ============ -->
+      <div id="titleScreen" class="title-screen">
+        <div class="title-glow" aria-hidden="true"></div>
+        <div class="title-content">
+          <div class="title-eyebrow"><span></span>رحلة شراعية بلا نهاية<span></span></div>
+          <h1 class="title-main">عالم <em>مفتوح</em></h1>
+          <p class="title-sub">أبحر نحو الأفق، اكتشف جزرًا منسية، واجمع الكنوز قبل أن يبتلعها المدّ.</p>
+          <div class="title-features">
+            <span><i class="f-dot"></i>أرخبيل حيّ</span>
+            <span><i class="f-dot"></i>نهار وطقس متغيّر</span>
+            <span><i class="f-dot"></i>كنوز مدفونة</span>
+          </div>
+          <div class="title-actions">
+            <button id="startBtn" class="start-btn" aria-label="Start">
+              <span class="start-ar">ابدأ الرحلة</span>
+              <span class="start-en">SET SAIL</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16"/><path d="M14 6l6 6-6 6"/></svg>
+            </button>
+            <p class="title-hint">لوحة المفاتيح أو اللمس · الصوت مُفعّل تلقائيًا</p>
+          </div>
+        </div>
+        <div class="title-footer">
+          <span>٨ جزر · كنوز · طقس · بحر حيّ</span>
+          <span class="title-version">V 1.0</span>
+        </div>
+      </div>
+
+      <div id="victory" class="victory is-hidden">
+        <div class="victory-card glass">
+          <div class="victory-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19c2-1.4 4-1.4 6 0s4 1.4 6 0 4-1.4 6 0"/><path d="M12 16V4"/><path d="M12 4l2 2-2 2"/><path d="M5 15h14"/></svg>
+          </div>
+          <span class="quest-kicker">اكتملت الرحلة</span>
+          <h2>أنت سيّد الأرخبيل</h2>
+          <p>اكتشفت كل الجزر واستعدت كل الكنوز. الأفق ما زال مفتوحًا أمامك.</p>
+          <div class="victory-stats">
+            <div><b id="vGold">0</b><span>ذهب</span></div>
+            <div><b id="vDist">0</b><span>ميل بحري</span></div>
+            <div><b id="vTime">0</b><span>دقيقة</span></div>
+          </div>
+          <button id="againBtn" class="start-btn small"><span class="start-ar">أبحر مجددًا</span><span class="start-en">NEW VOYAGE</span></button>
+        </div>
+      </div>
+
+      <div id="boot" class="boot"><div class="boot-ring"></div><span>نُجهّز الأشرعة…</span></div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
