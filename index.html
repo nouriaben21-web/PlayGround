@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0c0e14" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd166'/%3E%3Cstop offset='1' stop-color='%23ff3d7f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230b0d13'/%3E%3Ccircle cx='32' cy='30' r='14' fill='url(%23g)'/%3E%3Crect x='10' y='41' width='44' height='4' rx='2' fill='%23ff7a2f'/%3E%3C/svg%3E" />
+  <title>Sunset City — Open-World Sandbox</title>
+  <meta name="description" content="Sunset City: an original GTA-style open-world browser sandbox. Steal rides, run jobs and outrun the heat." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="game" aria-label="Sunset City game canvas"></canvas>
+  <div id="vignette"></div>
+
+  <div id="hud" class="hidden">
+    <div id="damageFx" class="screenfx damage-fx"></div>
+    <div class="status card">
+      <div class="toprow">
+        <span class="micro">HEALTH</span>
+        <span id="healthText" class="micro strong">100</span>
+      </div>
+      <div class="bar"><div id="healthFill"></div></div>
+      <div class="cashrow">
+        <span id="cash" class="cash">$0</span>
+        <div class="sys">
+          <button class="iconbtn" data-action="mute" title="Mute" aria-label="Mute">♪</button>
+          <button class="iconbtn" data-action="pause" title="Pause" aria-label="Pause">❚❚</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="topright">
+      <div id="stars" class="stars" aria-label="Wanted level"></div>
+      <div class="mini"><canvas id="minimap" width="190" height="190"></canvas></div>
+    </div>
+
+    <div id="mission" class="mission hidden">
+      <span class="mission-kicker">CURRENT JOB</span>
+      <strong id="missionTitle">HOT WHEELS</strong>
+      <span id="missionDesc">Steal the marked ride.</span>
+      <span id="missionMeta" class="meta">0 m</span>
+    </div>
+
+    <div id="toast" class="toast">
+      <strong id="toastTitle"></strong>
+      <span id="toastSub"></span>
+    </div>
+
+    <div id="speedo" class="speedo">
+      <span id="speedVal">0</span>
+      <small>KM/H</small>
+    </div>
+
+    <div id="prompt" class="prompt"></div>
+    <div class="hints">WASD drive · SHIFT brake · E enter · F shoot · ESC pause</div>
+  </div>
+
+  <div id="touch" class="hidden">
+    <div class="joywrap">
+      <div id="stick" aria-label="Movement joystick">
+        <div class="stick-ring"></div>
+        <div id="knob"></div>
+      </div>
+      <span class="joylabel">MOVE</span>
+    </div>
+    <div class="tbuttons">
+      <button class="tbtn brake" data-action="brake">BRAKE</button>
+      <button class="tbtn enter" data-action="enter">ENTER</button>
+      <button class="tbtn fire" data-action="fire">FIRE</button>
+    </div>
+  </div>
+
+  <div id="menu" class="overlay menu">
+    <div class="menu-inner">
+      <div class="kicker"><span class="dot"></span> OPEN-WORLD SANDBOX · RUNS IN YOUR BROWSER</div>
+      <h1><span class="sun">SUNSET</span><span class="city">CITY</span></h1>
+      <p class="tagline">Steal rides. Run jobs. Outrun the heat.</p>
+      <button id="startBtn" class="cta">ENTER THE CITY</button>
+      <div class="controls">
+        <div><kbd>W A S D</kbd><span>Move · Drive</span></div>
+        <div><kbd>E</kbd><span>Enter · Exit vehicle</span></div>
+        <div><kbd>F</kbd> / <kbd>CLICK</kbd><span>Shoot</span></div>
+        <div><kbd>SHIFT</kbd><span>Sprint · Handbrake</span></div>
+        <div><kbd>ESC</kbd><span>Pause</span></div>
+      </div>
+      <p class="best">BEST HAUL <strong id="bestMenu">$0</strong></p>
+      <p class="disclaimer">An unofficial, fan-made tribute to open-world crime sandboxes. Not affiliated with or endorsed by Rockstar Games. All code and art are original.</p>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay center hidden">
+    <div class="panel">
+      <span class="panel-kicker">TAKE A BREATHER</span>
+      <h2>PAUSED</h2>
+      <button id="resumeBtn" class="cta small">RESUME</button>
+      <button id="restartBtn" class="ghost">RESTART RUN</button>
+      <p class="tip">Tip: break line of sight and your wanted level cools down. Jobs pay more than loose cash.</p>
+    </div>
+  </div>
+
+  <div id="dead" class="overlay center hidden">
+    <div class="panel death">
+      <div class="wasted">WASTED</div>
+      <p>Hospital bill: <strong id="deadCash">$250</strong></p>
+      <button id="respawnBtn" class="cta small">RESPAWN</button>
+      <p id="deadCount" class="count"></p>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
