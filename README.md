@@ -16,3 +16,21 @@
 - 👤 [Explore the creator's projects](https://omgithub.com/nouriaben21-web).
 - 🌍 [Create with OMGithub](https://omgithub.com).
 <!-- omgithub:readme:end -->
+
+## 🏍 Ridge Runner
+
+A sunset motorcycle stunt game that runs in the browser with no build step or dependencies.
+
+- Procedural desert ridges, kickers, parallax mountains and a very warm sun.
+- Distance, airtime and flips all feed the score. Best run is saved locally.
+- **Controls:** `→` / `D` gas · `←` / `A` brake · in the air, gas = backflip and brake = frontflip · `P` pause · `M` mute.
+- Touch controls appear automatically on phones and tablets, with safe-area support.
+- The bike auto-levels when you let go in the air — hold gas to spin, release to land.
+
+Open `index.html` through any static server:
+
+```bash
+python3 -m http.server 3002
+```
+
+Then visit <http://localhost:3002>.

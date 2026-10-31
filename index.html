@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#160d1f" />
+  <meta name="description" content="Ridge Runner — a sunset motorcycle stunt game. Send it, flip it, land it." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%8F%8D%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <title>Ridge Runner — Sunset Run</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-state="menu">
+  <main id="app">
+    <canvas id="game" aria-label="Ridge Runner motorcycle game"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <header class="hud" id="hud">
+      <div class="hud-block">
+        <div class="stat">
+          <span class="label">SCORE</span>
+          <span class="value" id="score">0</span>
+        </div>
+        <div class="substat">
+          <span id="distance">0 m</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span id="flips">0 flips</span>
+        </div>
+        <div class="speed" aria-hidden="true"><i id="speedbar"></i></div>
+      </div>
+
+      <div class="hud-block right">
+        <div class="stat small">
+          <span class="label">BEST</span>
+          <span class="value" id="best">0</span>
+        </div>
+        <button class="icon-btn" id="mute" aria-label="Mute sound" title="Mute sound">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7"/><path class="wave" d="M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="slash" d="M4 4l16 16"/></svg>
+        </button>
+        <button class="icon-btn" id="pause" aria-label="Pause game" title="Pause">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="touch-controls" id="controls">
+      <button class="control brake" id="brake" aria-label="Brake and lean back">
+        <span class="glyph" aria-hidden="true">&#9664;</span>
+        <span class="cap">BRAKE</span>
+      </button>
+      <button class="control gas" id="gas" aria-label="Accelerate and lean forward">
+        <span class="glyph" aria-hidden="true">&#9654;</span>
+        <span class="cap">GAS</span>
+      </button>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="overlay" id="overlay">
+      <section class="screen" id="screen-start">
+        <p class="kicker">SUNSET RUN</p>
+        <h1 class="title">RIDGE<br /><em>RUNNER</em></h1>
+        <p class="tagline">Send it. Flip it. Keep the wheels down.</p>
+        <button class="primary" id="play">RIDE <span aria-hidden="true">&#9654;</span></button>
+        <div class="hints">
+          <span><kbd>&#9654;</kbd> gas</span>
+          <span><kbd>&#9664;</kbd> brake</span>
+          <span class="wide">in the air: gas = backflip, brake = frontflip</span>
+        </div>
+        <p class="fine">Best <strong id="best-menu">0</strong> &middot; touch, keyboard or tilt-free</p>
+      </section>
+
+      <section class="screen hidden" id="screen-over">
+        <p class="kicker danger">WIPEOUT</p>
+        <h2 class="title small-title">RUN<br /><em>OVER</em></h2>
+        <div class="badge hidden" id="newbest">NEW BEST</div>
+        <div class="results">
+          <div><span class="rlabel">SCORE</span><strong id="r-score">0</strong></div>
+          <div><span class="rlabel">DISTANCE</span><strong id="r-dist">0 m</strong></div>
+          <div><span class="rlabel">FLIPS</span><strong id="r-flips">0</strong></div>
+        </div>
+        <button class="primary" id="retry">RIDE AGAIN <span aria-hidden="true">&#8635;</span></button>
+        <p class="fine">Press <kbd>space</kbd> to restart</p>
+      </section>
+
+      <section class="screen hidden" id="screen-pause">
+        <p class="kicker">HOLD UP</p>
+        <h2 class="title small-title">PAUSED</h2>
+        <button class="primary" id="resume">RESUME <span aria-hidden="true">&#9654;</span></button>
+        <p class="fine">Press <kbd>P</kbd> or <kbd>esc</kbd></p>
+      </section>
+    </div>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
