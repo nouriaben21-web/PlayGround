@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#120f0d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="LOS SANTOS STREETS — an open-world crime sandbox. Steal cars, outrun the LSPD, and chase the money." />
+  <title>LOS SANTOS STREETS</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23120f0d'/%3E%3Ctext x='32' y='45' font-family='Arial Black' font-size='32' fill='%23f6c453' text-anchor='middle'%3ELS%3C/text%3E%3C/svg%3E" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div id="scene"></div>
+    <div class="fx-vignette"></div>
+    <div class="fx-grain"></div>
+    <div id="damage-flash"></div>
+
+    <div id="ui" class="hidden">
+      <div id="objective" class="hidden">
+        <div id="obj-title">MISSION</div>
+        <div id="obj-text">Reach the marker</div>
+      </div>
+
+      <div id="hud-topright">
+        <div id="wanted" aria-label="wanted level"></div>
+        <div id="money">$500</div>
+        <div id="weapon">
+          <span id="weapon-name">PISTOL</span>
+          <span id="ammo"><b id="ammo-mag">12</b> / <span id="ammo-reserve">96</span></span>
+        </div>
+      </div>
+
+      <div id="timer" class="hidden">01:30</div>
+
+      <div id="bottomleft">
+        <div id="radar-wrap">
+          <canvas id="radar" width="360" height="360"></canvas>
+        </div>
+        <div id="bars">
+          <div class="bar hp"><i id="hpfill"></i></div>
+          <div class="bar armor"><i id="armorfill"></i></div>
+        </div>
+      </div>
+
+      <div id="speedo" class="hidden">
+        <div id="speed-num">0</div>
+        <div class="speed-meta"><small>MPH</small><span id="gear">D</span></div>
+      </div>
+
+      <div id="crosshair" class="hidden"><i class="ch-t"></i><i class="ch-b"></i><i class="ch-l"></i><i class="ch-r"></i><i class="ch-dot"></i></div>
+
+      <div id="prompt" class="hidden"><b id="prompt-key">F</b><span id="prompt-text">ENTER VEHICLE</span></div>
+
+      <div id="toasts"></div>
+
+      <div id="mobile-controls">
+        <div id="joystick"><div id="stick"></div></div>
+        <div id="mobile-buttons">
+          <button class="mbtn small" data-action="switch">SWAP</button>
+          <button class="mbtn small" data-action="reload">RELOAD</button>
+          <button class="mbtn md" data-action="jump">JUMP</button>
+          <button class="mbtn md" data-action="car">CAR</button>
+          <button class="mbtn fire" data-action="fire">FIRE</button>
+        </div>
+      </div>
+
+      <button id="pause-btn" aria-label="Pause">❚❚</button>
+      <button id="mute-btn" aria-label="Mute">♪</button>
+      <div id="hint"></div>
+    </div>
+
+    <div id="mission-splash" class="hidden">
+      <div class="splash-kicker">MISSION</div>
+      <div id="splash-title">REPO MAN</div>
+      <div class="splash-line"></div>
+      <div id="splash-brief"></div>
+    </div>
+
+    <div id="mission-banner" class="hidden">
+      <div id="banner-title">MISSION PASSED</div>
+      <div id="banner-sub">+$650</div>
+    </div>
+
+    <div id="start" class="screen">
+      <div class="start-inner">
+        <div class="logo-wrap">
+          <div class="logo-kicker">LOS SANTOS</div>
+          <div class="logo-main">STREETS</div>
+          <div class="logo-sub">AN OPEN-WORLD CRIME SANDBOX</div>
+        </div>
+        <div class="start-rule"></div>
+        <p class="start-copy">Steal the cars. Take the jobs. Outrun the LSPD.<br />The city is yours if you can keep it.</p>
+        <button id="play-btn" disabled>BUILDING THE CITY<span class="dots">...</span></button>
+        <div id="loading-bar"><i></i></div>
+        <div class="controls-grid" id="controls-desktop">
+          <div><b>WASD</b><span>Move</span></div>
+          <div><b>MOUSE</b><span>Look</span></div>
+          <div><b>SHIFT</b><span>Sprint</span></div>
+          <div><b>SPACE</b><span>Jump / Brake</span></div>
+          <div><b>F</b><span>Enter / Exit car</span></div>
+          <div><b>CLICK</b><span>Shoot</span></div>
+          <div><b>R</b><span>Reload</span></div>
+          <div><b>ESC</b><span>Pause</span></div>
+        </div>
+        <div class="controls-grid touch-only" id="controls-touch">
+          <div><b>STICK</b><span>Move</span></div>
+          <div><b>DRAG</b><span>Look / steer</span></div>
+          <div><b>FIRE</b><span>Shoot</span></div>
+          <div><b>CAR</b><span>Enter / exit</span></div>
+          <div><b>JUMP</b><span>Jump</span></div>
+          <div><b>SWAP / RELOAD</b><span>Weapons</span></div>
+        </div>
+        <div class="start-foot">Best played in landscape with sound on.</div>
+      </div>
+    </div>
+
+    <div id="pause" class="screen hidden">
+      <div class="pause-inner">
+        <div class="logo-kicker">LOS SANTOS</div>
+        <div class="pause-title">PAUSED</div>
+        <div class="start-rule"></div>
+        <button id="resume-btn">RESUME</button>
+        <button id="restart-btn" class="ghost">RESTART SESSION</button>
+        <div class="pause-stats">
+          <div><small>MISSIONS</small><b id="stat-missions">0</b></div>
+          <div><small>BANK</small><b id="stat-money">$500</b></div>
+          <div><small>WANTED</small><b id="stat-wanted">CLEAN</b></div>
+        </div>
+        <div class="start-foot">Press ESC or P to resume</div>
+      </div>
+    </div>
+
+    <div id="wasted" class="screen hidden">
+      <div class="wasted-inner">
+        <div class="wasted-title">WASTED</div>
+        <div class="wasted-sub" id="wasted-sub">Medical bills: -$200</div>
+      </div>
+    </div>
+
+    <div id="rotate-hint">Rotate your phone for the full city view</div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
